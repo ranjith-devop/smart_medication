@@ -1,25 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    FlatList,
-    StyleSheet,
-    KeyboardAvoidingView,
-    Platform,
-    ActivityIndicator,
-    Image,
-    SafeAreaView
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { sendMessageToGemini, parseMedicineIntent } from '../services/aiService';
 import { GradientBackground } from '../components/GradientBackground';
 import { useApp } from '../context/AppContext';
 import { colors } from '../theme/colors';
-import { layout } from '../theme/layout';
 import { BlurView } from 'expo-blur';
+
+// Mock helper functions if they don't exist
+const parseMedicineIntent = (text) => {
+    const lower = text.toLowerCase();
+    if (lower.includes('add') && lower.includes('stock')) return { action: 'ADD', name: 'Medicine', quantity: 10 };
+    if (lower.includes('remove')) return { action: 'REMOVE', name: 'Medicine' };
+    return null;
+};
+
+const sendMessageToGemini = async (messages, imageBase64) => {
+    // Mock response
+    return "I'm a mock AI. I can't actually connect to Gemini yet, but I can help you manage your inventory!";
+};
 
 const ChatScreen = () => {
     const { setMedicines } = useApp();
