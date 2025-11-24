@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 
 export const GradientBackground = ({ children }) => {
+    const { colors } = useTheme();
     return (
         <LinearGradient
             colors={[colors.gradientStart, colors.gradientEnd]}

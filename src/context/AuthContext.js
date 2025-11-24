@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
         const mockUser = {
             id: Date.now().toString(),
-            name: credentials.identifier || 'Test User',
+            name: credentials.name || 'Test User',
             email: method === 'EMAIL' ? credentials.identifier : undefined,
             phone: method === 'MOBILE' ? credentials.identifier : undefined,
             role: selectedRole

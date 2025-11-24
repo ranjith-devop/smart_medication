@@ -1,24 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const UserDashboard = ({ navigation }) => {
     const { user, logout } = useAuth();
+    const { colors } = useTheme();
 
     return (
         <View style={styles.container}>
             <LinearGradient
-                colors={[colors.background, '#0f172a']}
+                colors={[colors.background, colors.gradientEnd]}
                 style={styles.background}
             />
 
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.greeting}>Good Morning,</Text>
-                    <Text style={styles.name}>{user?.name}</Text>
+                    <Text style={[styles.greeting, { color: colors.textSecondary }]}>Good Morning,</Text>
+                    <Text style={[styles.name, { color: colors.text }]}>{user?.name}</Text>
                 </View>
                 <TouchableOpacity onPress={logout} style={styles.logoutButton}>
                     <Ionicons name="log-out-outline" size={24} color={colors.textSecondary} />
@@ -26,35 +27,35 @@ const UserDashboard = ({ navigation }) => {
             </View>
 
             <ScrollView contentContainerStyle={styles.content}>
-                <View style={styles.reminderCard}>
+                <View style={[styles.reminderCard, { backgroundColor: 'rgba(59, 130, 246, 0.1)', borderColor: 'rgba(59, 130, 246, 0.3)' }]}>
                     <View style={styles.reminderHeader}>
-                        <Text style={styles.reminderTitle}>Next Dose</Text>
-                        <View style={styles.timeTag}>
+                        <Text style={[styles.reminderTitle, { color: colors.primary }]}>Next Dose</Text>
+                        <View style={[styles.timeTag, { backgroundColor: colors.primary }]}>
                             <Text style={styles.timeText}>12:30 PM</Text>
                         </View>
                     </View>
-                    <Text style={styles.medicineName}>Metformin - 500mg</Text>
-                    <Text style={styles.instruction}>Take with food</Text>
+                    <Text style={[styles.medicineName, { color: colors.text }]}>Metformin - 500mg</Text>
+                    <Text style={[styles.instruction, { color: colors.textSecondary }]}>Take with food</Text>
 
-                    <TouchableOpacity style={styles.takeButton}>
+                    <TouchableOpacity style={[styles.takeButton, { backgroundColor: colors.primary }]}>
                         <Text style={styles.takeButtonText}>Mark as Taken</Text>
                     </TouchableOpacity>
                 </View>
 
-                <Text style={styles.sectionTitle}>My Health</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>My Health</Text>
                 <View style={styles.actionGrid}>
-                    <TouchableOpacity style={styles.actionCard}>
+                    <TouchableOpacity style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]}>
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
                             <Ionicons name="medkit" size={24} color="#10b981" />
                         </View>
-                        <Text style={styles.actionText}>My Meds</Text>
+                        <Text style={[styles.actionText, { color: colors.text }]}>My Meds</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.actionCard}>
+                    <TouchableOpacity style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]}>
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
                             <Ionicons name="calendar" size={24} color="#f59e0b" />
                         </View>
-                        <Text style={styles.actionText}>Schedule</Text>
+                        <Text style={[styles.actionText, { color: colors.text }]}>Schedule</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -82,12 +83,10 @@ const styles = StyleSheet.create({
     },
     greeting: {
         fontSize: 16,
-        color: colors.textSecondary,
     },
     name: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.text,
     },
     logoutButton: {
         padding: 8,
@@ -98,12 +97,10 @@ const styles = StyleSheet.create({
         padding: 24,
     },
     reminderCard: {
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
         borderRadius: 24,
         padding: 24,
         marginBottom: 32,
         borderWidth: 1,
-        borderColor: 'rgba(59, 130, 246, 0.3)',
     },
     reminderHeader: {
         flexDirection: 'row',
@@ -113,11 +110,9 @@ const styles = StyleSheet.create({
     },
     reminderTitle: {
         fontSize: 16,
-        color: colors.primary,
         fontWeight: '600',
     },
     timeTag: {
-        backgroundColor: colors.primary,
         paddingHorizontal: 12,
         paddingVertical: 4,
         borderRadius: 12,
@@ -130,16 +125,13 @@ const styles = StyleSheet.create({
     medicineName: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: colors.text,
         marginBottom: 4,
     },
     instruction: {
         fontSize: 16,
-        color: colors.textSecondary,
         marginBottom: 24,
     },
     takeButton: {
-        backgroundColor: colors.primary,
         paddingVertical: 16,
         borderRadius: 16,
         alignItems: 'center',
@@ -152,7 +144,6 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.text,
         marginBottom: 16,
     },
     actionGrid: {
@@ -162,12 +153,10 @@ const styles = StyleSheet.create({
     },
     actionCard: {
         width: '47%',
-        backgroundColor: 'rgba(30, 41, 59, 0.4)',
         padding: 16,
         borderRadius: 16,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.05)',
     },
     iconContainer: {
         width: 48,
@@ -180,7 +169,6 @@ const styles = StyleSheet.create({
     actionText: {
         fontSize: 14,
         fontWeight: '600',
-        color: colors.text,
     },
 });
 

@@ -10,13 +10,14 @@ const LoginScreen = ({ navigation, route }) => {
     const { role } = route.params;
     const { login, isLoading } = useAuth();
     const [method, setMethod] = useState('MOBILE'); // 'MOBILE' or 'EMAIL'
+    const [name, setName] = useState('');
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async () => {
-        if (!identifier || !password) return;
-        await login(role, method, { identifier, password });
+        if (!identifier || !password || !name) return;
+        await login(role, method, { identifier, password, name });
     };
 
     const getRoleTitle = () => {
@@ -63,6 +64,23 @@ const LoginScreen = ({ navigation, route }) => {
                     </View>
 
                     <BlurView intensity={20} tint="dark" style={styles.formCard}>
+                        <View style={styles.inputContainer}>
+                            <Ionicons
+                                name="person-outline"
+                                size={20}
+                                color={colors.textSecondary}
+                                style={styles.inputIcon}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Full Name"
+                                placeholderTextColor={colors.textSecondary}
+                                value={name}
+                                onChangeText={setName}
+                                autoCapitalize="words"
+                            />
+                        </View>
+
                         <View style={styles.inputContainer}>
                             <Ionicons
                                 name={method === 'MOBILE' ? 'call-outline' : 'mail-outline'}

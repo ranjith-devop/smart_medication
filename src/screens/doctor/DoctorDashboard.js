@@ -1,25 +1,26 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const DoctorDashboard = ({ navigation }) => {
     const { user, logout } = useAuth();
+    const { colors, isDarkMode } = useTheme();
 
     return (
         <View style={styles.container}>
             <LinearGradient
-                colors={[colors.background, '#0f172a']}
+                colors={[colors.background, colors.gradientEnd]}
                 style={styles.background}
             />
 
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.greeting}>Welcome,</Text>
-                    <Text style={styles.name}>Dr. {user?.name}</Text>
+                    <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome,</Text>
+                    <Text style={[styles.name, { color: colors.text }]}>Dr. {user?.name}</Text>
                 </View>
                 <TouchableOpacity onPress={logout} style={styles.logoutButton}>
                     <Ionicons name="log-out-outline" size={24} color={colors.textSecondary} />
@@ -28,48 +29,48 @@ const DoctorDashboard = ({ navigation }) => {
 
             <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.statsContainer}>
-                    <BlurView intensity={20} tint="dark" style={styles.statCard}>
-                        <Text style={styles.statNumber}>12</Text>
-                        <Text style={styles.statLabel}>Patients</Text>
+                    <BlurView intensity={20} tint={isDarkMode ? "dark" : "light"} style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.statNumber, { color: colors.primary }]}>12</Text>
+                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Patients</Text>
                     </BlurView>
-                    <BlurView intensity={20} tint="dark" style={styles.statCard}>
-                        <Text style={styles.statNumber}>5</Text>
-                        <Text style={styles.statLabel}>Critical</Text>
+                    <BlurView intensity={20} tint={isDarkMode ? "dark" : "light"} style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.statNumber, { color: colors.primary }]}>5</Text>
+                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Critical</Text>
                     </BlurView>
-                    <BlurView intensity={20} tint="dark" style={styles.statCard}>
-                        <Text style={styles.statNumber}>8</Text>
-                        <Text style={styles.statLabel}>Reports</Text>
+                    <BlurView intensity={20} tint={isDarkMode ? "dark" : "light"} style={[styles.statCard, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.statNumber, { color: colors.primary }]}>8</Text>
+                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Reports</Text>
                     </BlurView>
                 </View>
 
-                <Text style={styles.sectionTitle}>Quick Actions</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
                 <View style={styles.actionGrid}>
-                    <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Residents')}>
+                    <TouchableOpacity style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]} onPress={() => navigation.navigate('Residents')}>
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(59, 130, 246, 0.2)' }]}>
                             <Ionicons name="people" size={24} color="#3b82f6" />
                         </View>
-                        <Text style={styles.actionText}>View Patients</Text>
+                        <Text style={[styles.actionText, { color: colors.text }]}>View Patients</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.actionCard}>
+                    <TouchableOpacity style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]}>
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
                             <Ionicons name="document-text" size={24} color="#10b981" />
                         </View>
-                        <Text style={styles.actionText}>Reports</Text>
+                        <Text style={[styles.actionText, { color: colors.text }]}>Reports</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.actionCard}>
+                    <TouchableOpacity style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]}>
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(236, 72, 153, 0.2)' }]}>
                             <Ionicons name="medkit" size={24} color="#ec4899" />
                         </View>
-                        <Text style={styles.actionText}>Prescribe</Text>
+                        <Text style={[styles.actionText, { color: colors.text }]}>Prescribe</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.actionCard}>
+                    <TouchableOpacity style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]}>
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
                             <Ionicons name="scan" size={24} color="#f59e0b" />
                         </View>
-                        <Text style={styles.actionText}>AI Scan</Text>
+                        <Text style={[styles.actionText, { color: colors.text }]}>AI Scan</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -97,12 +98,10 @@ const styles = StyleSheet.create({
     },
     greeting: {
         fontSize: 16,
-        color: colors.textSecondary,
     },
     name: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.text,
     },
     logoutButton: {
         padding: 8,
@@ -122,24 +121,20 @@ const styles = StyleSheet.create({
         marginHorizontal: 4,
         padding: 16,
         borderRadius: 16,
-        backgroundColor: 'rgba(30, 41, 59, 0.4)',
         alignItems: 'center',
         overflow: 'hidden',
     },
     statNumber: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.primary,
         marginBottom: 4,
     },
     statLabel: {
         fontSize: 12,
-        color: colors.textSecondary,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.text,
         marginBottom: 16,
     },
     actionGrid: {
@@ -149,12 +144,10 @@ const styles = StyleSheet.create({
     },
     actionCard: {
         width: '47%',
-        backgroundColor: 'rgba(30, 41, 59, 0.4)',
         padding: 16,
         borderRadius: 16,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.05)',
     },
     iconContainer: {
         width: 48,
@@ -167,7 +160,6 @@ const styles = StyleSheet.create({
     actionText: {
         fontSize: 14,
         fontWeight: '600',
-        color: colors.text,
     },
 });
 

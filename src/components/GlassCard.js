@@ -1,11 +1,24 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 
 export const GlassCard = ({ children, style, intensity = 20 }) => {
+    const { colors, isDarkMode } = useTheme();
+
     return (
-        <BlurView intensity={intensity} tint="dark" style={[styles.container, style]}>
+        <BlurView
+            intensity={intensity}
+            tint={isDarkMode ? "dark" : "light"}
+            style={[
+                styles.container,
+                {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.glassBorder
+                },
+                style
+            ]}
+        >
             {children}
         </BlurView>
     );
@@ -13,11 +26,9 @@ export const GlassCard = ({ children, style, intensity = 20 }) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: colors.surface,
         borderRadius: 16,
         padding: 16,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: colors.glassBorder,
     },
 });

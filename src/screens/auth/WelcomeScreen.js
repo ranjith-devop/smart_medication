@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../theme/colors';
 import { BlurView } from 'expo-blur';
@@ -19,8 +19,11 @@ const WelcomeScreen = ({ navigation }) => {
                 </View>
 
                 <View style={styles.illustration}>
-                    {/* Placeholder for illustration */}
-                    <View style={styles.circle} />
+                    <Image
+                        source={require('../../../assets/welcome-illustration.png')}
+                        style={styles.image}
+                        resizeMode="contain"
+                    />
                 </View>
 
                 <View style={styles.footer}>
@@ -85,13 +88,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
     },
-    circle: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        borderWidth: 1,
-        borderColor: 'rgba(59, 130, 246, 0.3)',
+    image: {
+        width: '100%',
+        height: '100%',
+        maxHeight: 350,
     },
     footer: {
         alignItems: 'center',
