@@ -7,7 +7,7 @@ web-build/
 node_modules/
 .pnp
 .pnp.js
-
+.test-gemini.js
 # Testing
 coverage/
 
