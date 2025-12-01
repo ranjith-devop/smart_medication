@@ -1,28 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { GradientBackground } from '../components/GradientBackground';
 import { useApp } from '../context/AppContext';
-import { colors } from '../theme/colors';
+import { ThemeContext } from '../context/ThemeContext';
 import { BlurView } from 'expo-blur';
 
-// Mock helper functions if they don't exist
-const parseMedicineIntent = (text) => {
-    const lower = text.toLowerCase();
-    if (lower.includes('add') && lower.includes('stock')) return { action: 'ADD', name: 'Medicine', quantity: 10 };
-    if (lower.includes('remove')) return { action: 'REMOVE', name: 'Medicine' };
-    return null;
-};
 
-const sendMessageToGemini = async (messages, imageBase64) => {
-    // Mock response
-    return "I'm a mock AI. I can't actually connect to Gemini yet, but I can help you manage your inventory!";
-};
 
 const ChatScreen = () => {
     const { setMedicines } = useApp();
+    const { colors, isDarkMode } = useContext(ThemeContext);
     const [messages, setMessages] = useState([
         { id: '1', text: 'Hello! I am your Smart Meds Assistant. How can I help you today?', sender: 'ai' }
     ]);
@@ -38,45 +28,21 @@ const ChatScreen = () => {
         setInputText('');
         setIsLoading(true);
 
-        try {
-            const intent = parseMedicineIntent(userMessage.text);
-            if (intent) {
-                if (intent.action === 'ADD') {
-                    setMedicines(prev => [
-                        ...prev,
-                        {
-                            id: Date.now().toString(),
-                            name: intent.name,
-                            stock: intent.quantity,
-                            expiry: '2025-01-01',
-                            residentId: '1'
-                        }
-                    ]);
-                } else if (intent.action === 'REMOVE') {
-                    setMedicines(prev => prev.filter(m => m.name.toLowerCase() !== intent.name.toLowerCase()));
-                }
-
-                const responseText = `I've ${intent.action === 'ADD' ? 'added' : 'removed'} ${intent.quantity} ${intent.name} ${intent.action === 'ADD' ? 'to' : 'from'} your inventory.`;
-                const aiMessage = { id: (Date.now() + 1).toString(), text: responseText, sender: 'ai' };
-                setMessages(prev => [...prev, aiMessage]);
-                setIsLoading(false);
-                return;
-            }
-
-            const response = await sendMessageToGemini([...messages, userMessage]);
-            const aiMessage = { id: (Date.now() + 1).toString(), text: response, sender: 'ai' };
+        // Simulate AI response delay
+        setTimeout(() => {
+            const aiMessage = {
+                id: (Date.now() + 1).toString(),
+                text: "This is a mock response. The AI service is currently disconnected.",
+                sender: 'ai'
+            };
             setMessages(prev => [...prev, aiMessage]);
-        } catch (error) {
-            const errorMessage = { id: (Date.now() + 1).toString(), text: "Sorry, I'm having trouble connecting right now.", sender: 'ai' };
-            setMessages(prev => [...prev, errorMessage]);
-        } finally {
             setIsLoading(false);
-        }
+        }, 1000);
     };
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ImagePicker.MediaType.Images,
             allowsEditing: true,
             base64: true,
             quality: 0.5,
@@ -85,23 +51,23 @@ const ChatScreen = () => {
         if (!result.canceled) {
             const userMessage = {
                 id: Date.now().toString(),
-                text: 'Analyze this medical report. Extract key values (e.g., blood pressure, sugar levels) in a concise list. Based on these values, suggest any potential diagnosis or health concerns. Keep it short and easy to understand.',
+                text: 'Analyze this medical report.',
                 sender: 'user',
                 image: result.assets[0].uri
             };
             setMessages(prev => [...prev, userMessage]);
             setIsLoading(true);
 
-            try {
-                const response = await sendMessageToGemini([...messages, userMessage], result.assets[0].base64);
-                const aiMessage = { id: (Date.now() + 1).toString(), text: response, sender: 'ai' };
+            // Simulate AI response delay for image
+            setTimeout(() => {
+                const aiMessage = {
+                    id: (Date.now() + 1).toString(),
+                    text: "Image received. Mock analysis: Normal vitals.",
+                    sender: 'ai'
+                };
                 setMessages(prev => [...prev, aiMessage]);
-            } catch (error) {
-                const errorMessage = { id: (Date.now() + 1).toString(), text: "Sorry, I couldn't analyze the image.", sender: 'ai' };
-                setMessages(prev => [...prev, errorMessage]);
-            } finally {
                 setIsLoading(false);
-            }
+            }, 1500);
         }
     };
 
@@ -112,12 +78,12 @@ const ChatScreen = () => {
     const renderItem = ({ item }) => (
         <View style={[
             styles.messageBubble,
-            item.sender === 'user' ? styles.userBubble : styles.aiBubble
+            item.sender === 'user' ? styles.userBubble : [styles.aiBubble, { backgroundColor: colors.surface, borderColor: colors.glassBorder }]
         ]}>
             {item.image && <Image source={{ uri: item.image }} style={styles.messageImage} />}
             <Text style={[
                 styles.messageText,
-                item.sender === 'user' ? styles.userText : styles.aiText
+                item.sender === 'user' ? styles.userText : { color: colors.text }
             ]}>{item.text}</Text>
         </View>
     );
@@ -125,8 +91,8 @@ const ChatScreen = () => {
     return (
         <GradientBackground>
             <SafeAreaView style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.headerTitle}>Smart Assistant</Text>
+                <View style={[styles.header, { borderBottomColor: colors.glassBorder }]}>
+                    <Text style={[styles.headerTitle, { color: colors.text }]}>Smart Assistant</Text>
                 </View>
 
                 <FlatList
@@ -142,18 +108,22 @@ const ChatScreen = () => {
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
                 >
-                    <BlurView intensity={30} tint="dark" style={styles.inputContainer}>
+                    <BlurView intensity={30} tint={isDarkMode ? "dark" : "light"} style={[styles.inputContainer, { borderTopColor: colors.glassBorder }]}>
                         <TouchableOpacity onPress={pickImage} style={styles.iconButton}>
                             <Ionicons name="camera" size={24} color={colors.primary} />
                         </TouchableOpacity>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, {
+                                backgroundColor: isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.5)',
+                                color: colors.text,
+                                borderColor: colors.glassBorder
+                            }]}
                             value={inputText}
                             onChangeText={setInputText}
                             placeholder="Type a message..."
                             placeholderTextColor={colors.textSecondary}
                         />
-                        <TouchableOpacity onPress={handleSend} style={styles.sendButton} disabled={isLoading}>
+                        <TouchableOpacity onPress={handleSend} style={[styles.sendButton, { backgroundColor: colors.primary }]} disabled={isLoading}>
                             {isLoading ? (
                                 <ActivityIndicator color="#fff" />
                             ) : (
@@ -175,12 +145,10 @@ const styles = StyleSheet.create({
         padding: 16,
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.1)',
     },
     headerTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.white,
         letterSpacing: 0.5,
     },
     list: {
@@ -198,14 +166,12 @@ const styles = StyleSheet.create({
     },
     userBubble: {
         alignSelf: 'flex-end',
-        backgroundColor: colors.primary,
+        backgroundColor: '#3b82f6', // Keep primary color static or use colors.primary if available in scope (it is not in styles scope)
         borderBottomRightRadius: 4,
     },
     aiBubble: {
         alignSelf: 'flex-start',
-        backgroundColor: 'rgba(255,255,255,0.1)',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
         borderBottomLeftRadius: 4,
     },
     messageText: {
@@ -213,10 +179,7 @@ const styles = StyleSheet.create({
         lineHeight: 22,
     },
     userText: {
-        color: colors.white,
-    },
-    aiText: {
-        color: colors.white,
+        color: '#fff',
     },
     messageImage: {
         width: 200,
@@ -229,25 +192,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 12,
         borderTopWidth: 1,
-        borderTopColor: 'rgba(255,255,255,0.1)',
     },
     input: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.3)',
         borderRadius: 20,
         paddingHorizontal: 16,
         paddingVertical: 10,
         marginHorizontal: 8,
         fontSize: 16,
-        color: colors.white,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
     },
     iconButton: {
         padding: 8,
     },
     sendButton: {
-        backgroundColor: colors.primary,
         width: 40,
         height: 40,
         borderRadius: 20,

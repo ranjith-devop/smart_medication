@@ -22,6 +22,14 @@ import EPrescriptionScreen from '../screens/doctor/EPrescriptionScreen';
 const Tab = createBottomTabNavigator();
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+    const focusedRoute = state.routes[state.index];
+    const focusedDescriptor = descriptors[focusedRoute.key];
+    const focusedOptions = focusedDescriptor.options;
+
+    if (focusedOptions.tabBarStyle?.display === 'none') {
+        return null;
+    }
+
     // Define which routes should show in the tab bar
     const visibleRoutes = ['Dashboard', 'Residents', 'Inventory', 'MyMeds', 'Chat', 'Profile'];
 
@@ -102,7 +110,11 @@ export const AppNavigator = () => {
                     <Tab.Screen name="Dashboard" component={DoctorDashboard} />
                     <Tab.Screen name="Residents" component={ResidentsScreen} />
                     <Tab.Screen name="Inventory" component={InventoryScreen} />
-                    <Tab.Screen name="Chat" component={ChatScreen} />
+                    <Tab.Screen
+                        name="Chat"
+                        component={ChatScreen}
+                        options={{ tabBarStyle: { display: 'none' } }}
+                    />
                     <Tab.Screen name="Profile" component={ProfileScreen} />
                     <Tab.Screen name="PatientDetails" component={PatientDetailsScreen} />
                     <Tab.Screen name="EPrescription" component={EPrescriptionScreen} />
@@ -114,7 +126,11 @@ export const AppNavigator = () => {
                     <Tab.Screen name="Dashboard" component={CaregiverDashboard} />
                     <Tab.Screen name="Residents" component={ResidentsScreen} />
                     <Tab.Screen name="Inventory" component={InventoryScreen} />
-                    <Tab.Screen name="Chat" component={ChatScreen} />
+                    <Tab.Screen
+                        name="Chat"
+                        component={ChatScreen}
+                        options={{ tabBarStyle: { display: 'none' } }}
+                    />
                     <Tab.Screen name="Profile" component={ProfileScreen} />
                     <Tab.Screen name="PatientDetails" component={PatientDetailsScreen} />
                 </>

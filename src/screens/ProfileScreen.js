@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView } from 'react-native';
 import { GradientBackground } from '../components/GradientBackground';
 import { GlassCard } from '../components/GlassCard';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
+import { ThemeContext } from '../context/ThemeContext';
 
 const ProfileScreen = () => {
     const { user } = useAuth();
-    const { colors, isDarkMode, toggleTheme } = useTheme();
+    const { colors, isDarkMode, toggleTheme } = useContext(ThemeContext);
 
     const SettingItem = ({ icon, label, value, isSwitch, onPress, onValueChange }) => (
         <TouchableOpacity onPress={onPress} disabled={isSwitch}>
@@ -41,7 +41,7 @@ const ProfileScreen = () => {
                     <View style={[styles.avatarContainer, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
                         <Ionicons name="person" size={40} color={colors.white} />
                     </View>
-                    <Text style={[styles.name, { color: colors.white }]}>{user?.name || 'User Name'}</Text>
+                    <Text style={[styles.name, { color: colors.text }]}>{user?.name || 'User Name'}</Text>
                 </View>
 
                 <GlassCard style={styles.section}>
