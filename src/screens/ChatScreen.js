@@ -7,12 +7,13 @@ import { GradientBackground } from '../components/GradientBackground';
 import { useApp } from '../context/AppContext';
 import { ThemeContext } from '../context/ThemeContext';
 import { BlurView } from 'expo-blur';
+import { useAlert } from '../context/AlertContext';
 
-
-
-const ChatScreen = () => {
+const ChatScreen = ({ route }) => {
+    const alert = useAlert();
     const { setMedicines } = useApp();
     const { colors, isDarkMode } = useContext(ThemeContext);
+    const autoOpenScanner = route?.params?.autoOpenScanner;
     const [messages, setMessages] = useState([
         { id: '1', text: 'Hello! I am your Smart Meds Assistant. How can I help you today?', sender: 'ai' }
     ]);
@@ -40,14 +41,28 @@ const ChatScreen = () => {
         }, 1000);
     };
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType.Images,
-            allowsEditing: true,
-            base64: true,
-            quality: 0.5,
-        });
+    const handleImageAction = () => {
+        alert.info(
+            "Upload Medical Report",
+            "Choose an option to upload your medical report",
+            [
+                {
+                    text: "Camera",
+                    onPress: openCamera
+                },
+                {
+                    text: "Gallery",
+                    onPress: openGallery
+                },
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                }
+            ]
+        );
+    };
 
+    const processImage = (result) => {
         if (!result.canceled) {
             const userMessage = {
                 id: Date.now().toString(),
@@ -62,18 +77,62 @@ const ChatScreen = () => {
             setTimeout(() => {
                 const aiMessage = {
                     id: (Date.now() + 1).toString(),
-                    text: "Image received. Mock analysis: Normal vitals.",
+                    text: "Mock Analysis Report:\n\n• Blood Pressure: 120/80 mmHg (Normal)\n• Heart Rate: 72 bpm (Normal)\n• Sugar Levels: 95 mg/dL (Normal)\n\nDiagnosis: Vitals are within healthy range. No immediate concerns detected.",
                     sender: 'ai'
                 };
                 setMessages(prev => [...prev, aiMessage]);
                 setIsLoading(false);
-            }, 1500);
+            }, 2000);
+        }
+    };
+
+    const openCamera = async () => {
+        try {
+            const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+            if (permissionResult.granted === false) {
+                alert.warning("Permission Required", "You've refused to allow this app to access your camera!");
+                return;
+            }
+
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: 'images',
+                allowsEditing: true,
+                quality: 0.5,
+                base64: true,
+            });
+
+            processImage(result);
+        } catch (error) {
+            console.log("Error opening camera:", error);
+            setIsLoading(false);
+        }
+    };
+
+    const openGallery = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: 'images',
+                allowsEditing: true,
+                quality: 0.5,
+                base64: true,
+            });
+
+            processImage(result);
+        } catch (error) {
+            console.log("Error opening gallery:", error);
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
     }, [messages]);
+
+    useEffect(() => {
+        if (autoOpenScanner) {
+            handleImageAction();
+        }
+    }, [autoOpenScanner]);
 
     const renderItem = ({ item }) => (
         <View style={[
@@ -109,7 +168,7 @@ const ChatScreen = () => {
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
                 >
                     <BlurView intensity={30} tint={isDarkMode ? "dark" : "light"} style={[styles.inputContainer, { borderTopColor: colors.glassBorder }]}>
-                        <TouchableOpacity onPress={pickImage} style={styles.iconButton}>
+                        <TouchableOpacity onPress={handleImageAction} style={styles.iconButton}>
                             <Ionicons name="camera" size={24} color={colors.primary} />
                         </TouchableOpacity>
                         <TextInput

@@ -1,13 +1,15 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { GradientBackground } from '../components/GradientBackground';
 import { GlassCard } from '../components/GlassCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
+import { useAlert } from '../context/AlertContext';
 
 const InventoryScreen = () => {
+    const alert = useAlert();
     const { medicines, setMedicines, residents } = useApp();
     const { role } = useAuth();
     const { colors, isDarkMode } = useContext(ThemeContext);
@@ -18,7 +20,7 @@ const InventoryScreen = () => {
 
     const handleAdd = () => {
         if (!newMedName.trim() || !newMedStock.trim()) {
-            Alert.alert('Error', 'Please fill in all fields');
+            alert.error('Error', 'Please fill in all fields');
             return;
         }
 
@@ -39,14 +41,13 @@ const InventoryScreen = () => {
     };
 
     const handleDelete = (id) => {
-        Alert.alert(
+        alert.warning(
             'Delete Medicine',
             'Are you sure you want to remove this medicine?',
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Delete',
-                    style: 'destructive',
                     onPress: () => {
                         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                         setMedicines(prev => prev.filter(m => m.id !== id));
@@ -95,7 +96,7 @@ const InventoryScreen = () => {
                 <View style={styles.header}>
                     <Text style={[styles.title, { color: colors.text }]}>{role === 'USER' ? 'My Medicine Cabinet' : 'Inventory'}</Text>
                     <View style={styles.headerActions}>
-                        <TouchableOpacity style={styles.scanButton} onPress={() => Alert.alert("Scanner", "Camera scanner would open here.")}>
+                        <TouchableOpacity style={styles.scanButton} onPress={() => alert.info("Scanner", "Camera scanner would open here.")}>
                             <Ionicons name="barcode-outline" size={24} color={colors.white} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => {

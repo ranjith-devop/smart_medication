@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
         try {
             await AsyncStorage.removeItem('user');
             await AsyncStorage.removeItem('role');
+            await AsyncStorage.removeItem('userToken');
             setUser(null);
             setRole(null);
         } catch (e) {
@@ -66,13 +67,29 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const setAuthUser = async (userData) => {
+        try {
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+            await AsyncStorage.setItem('role', userData.role || 'USER');
+            if (userData.token) {
+                await AsyncStorage.setItem('userToken', userData.token);
+            }
+            setUser(userData);
+            setRole(userData.role || 'USER');
+        } catch (e) {
+            console.error("Failed to set user", e);
+            throw e;
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
             role,
             isLoading,
             login,
-            logout
+            logout,
+            setAuthUser
         }}>
             {children}
         </AuthContext.Provider>

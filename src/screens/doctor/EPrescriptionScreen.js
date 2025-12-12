@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../../context/AppContext';
+import { useAlert } from '../../context/AlertContext';
 
 const EPrescriptionScreen = ({ navigation, route }) => {
+    const alert = useAlert();
     const { resident } = route.params;
     const { setMedicines } = useApp(); // In a real app, we would have a more robust addMedicine function
 
@@ -16,7 +18,7 @@ const EPrescriptionScreen = ({ navigation, route }) => {
 
     const handlePrescribe = () => {
         if (!medName || !dosage) {
-            Alert.alert('Error', 'Please fill in Medicine Name and Dosage');
+            alert.error('Error', 'Please fill in Medicine Name and Dosage');
             return;
         }
 
@@ -34,7 +36,7 @@ const EPrescriptionScreen = ({ navigation, route }) => {
         };
 
         setMedicines(prev => [...prev, newMed]);
-        Alert.alert('Success', 'Prescription sent successfully', [
+        alert.success('Success', 'Prescription sent successfully', [
             { text: 'OK', onPress: () => navigation.goBack() }
         ]);
     };

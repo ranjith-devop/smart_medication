@@ -18,6 +18,7 @@ import UserDashboard from '../screens/user/UserDashboard';
 
 import PatientDetailsScreen from '../screens/doctor/PatientDetailsScreen';
 import EPrescriptionScreen from '../screens/doctor/EPrescriptionScreen';
+import PatientReportsScreen from '../screens/doctor/pages/PatientReportsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -118,6 +119,11 @@ export const AppNavigator = () => {
                     <Tab.Screen name="Profile" component={ProfileScreen} />
                     <Tab.Screen name="PatientDetails" component={PatientDetailsScreen} />
                     <Tab.Screen name="EPrescription" component={EPrescriptionScreen} />
+                    <Tab.Screen
+                        name="PatientReports"
+                        component={PatientReportsScreen}
+                        options={{ tabBarStyle: { display: 'none' } }}
+                    />
                 </>
             )}
 
